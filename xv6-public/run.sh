@@ -1,5 +1,6 @@
+#!/usr/bin/env bash
 # clean make
-make clen
+make clean
 
 # make
 make
