@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ##Shell script to automate the build and run process
 
 #Build the docker image
