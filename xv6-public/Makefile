@@ -175,8 +175,8 @@ UPROGS=\
 	_hello\
 	_uniq\
 
-fs.img: mkfs README e1.txt $(UPROGS)
-	./mkfs fs.img README e1.txt $(UPROGS)
+fs.img: mkfs README e1.txt e2.txt $(UPROGS)
+	./mkfs fs.img README e1.txt e2.txt $(UPROGS)
 
 -include *.d
 
@@ -244,7 +244,7 @@ EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
 	printf.c umalloc.c\
-	README e1.txt dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
+	README e1.txt e2.txt dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 
 dist:

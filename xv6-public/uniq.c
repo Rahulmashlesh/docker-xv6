@@ -1,44 +1,29 @@
 //
 // Created by rahul on 9/26/18.
+
+//if ((s1[i] | 32) < (s2[i] | 32))
 //
 
 #include "types.h"
 #include "stat.h"
 #include "user.h"
 
-char buf[8*1024];
+char buf[512];
+char *str;
+int arrayOfDelimitr[512];
+int count;
 
-
-char* getNextLine(int index, char* string ) {
-
-    int j = 0;
-    char *nextLine = "";
-
-    while (index < strlen(string)) {
-        if ( (string[index] == '\n' ) || (string[index]== string[strlen(string)]) ){
-            nextLine[j] = '\0';
-            return nextLine;
-        }
-        /*if (string[index] == str[strlen(str) ) {
-            nextLine[j] = '\0';
-            printf(1,"you reached the end");
-            return nextLine;
-        }*/
-        nextLine[j++] = string[index];
+void display(int index) {
+    while( (str[index] != '\n') || (str[index] == str[strlen(str)]) ){
+        printf(1,"%c",str[index]);
         index++;
     }
-    printf(1,"IF you reach here !! some thing went wrong in getNextLine function");
-    return "ERROR!!!";
+    printf(1,"\n");
 }
 
-
-void uniq(int fd) {
-
-    int i, n, count=0;
-    char *str = "" ;
-
-    char *line;
-
+char* readFile (int fd) {
+    int n;
+    char *str;
     n = read(fd, buf, sizeof(buf));
     if(n < 0) {
         printf(1, "uniq: read error\n");
@@ -47,39 +32,63 @@ void uniq(int fd) {
 
     str = malloc(strlen(buf) + 1);
     strcpy(str,buf);
+    return str;
+}
 
+
+int compare (int thisPoint, int nextPoint) {
+    int flag=0,j; //o is same , 1 is diff.
+    for (j = 0; j<=5; j++) {
+        if(str[arrayOfDelimitr[thisPoint]+j] != str[arrayOfDelimitr[nextPoint]+j]){
+            flag =1;
+        }
+    }
+    return flag;
+}
+
+int parseFile () {
+    arrayOfDelimitr[0]=0;
+    int i, j =1;
     for (i = 0;i <= strlen(str) ;i++) {
         if (str[i]=='\n') {
             printf(1, "position = %d\n", i);
             count++;
+            arrayOfDelimitr[j]=i+1;
+            j++;
+        }
+        if (str[i] == str[strlen(str)]) {
+            printf(1, "position = %d\n", i);
+            printf(1,"!!you reached the last line!!\n");
+            count++;
+            arrayOfDelimitr[j]=i+1;
+            j++;
         }
     }
-  /*  int g = strlen(str);   // code for the last line issue.
-    str[g+2]=str[g+1];
-    str[g+1]='\n';*/
-
-  //printf(1,"last past of str - %s\n",str[strlen(str)]);
-
-    int p=1;
-    int point=0;
-   // char *PrevLine, *CurnLine;
-    line = getNextLine(point,str);
-   // PrevLine = line;
-    printf(1,"1--0--->%s\n", line);
-    while (p<count) {
-        point = point +strlen(line)+1;
-        line = getNextLine(point,str);
-        //CurnLine = line;
-        printf(1,"%d--%d--->%s\n",p+1, point-1 ,line);
-        p++;
-
-       /* if(strcmp(CurnLine,PrevLine)==0) {
-            printf(1,"current %s is same as prev %s\n", CurnLine, PrevLine);*/
-        //}
-    }
+    return count;
 }
 
 
+void uniq(int fd) {
+
+    str = readFile(fd);
+    count = parseFile();
+    int i, occurence, j;
+
+    for (i=1; i<=count;i=i+occurence) {
+        occurence = 1;
+        display(arrayOfDelimitr[i - 1]);
+
+        for (j = i; j < count; j++) {
+            //printf(1,"%d,%d\n",i-1,j);
+            if (compare(i -1, j) == 0) {
+                occurence++; //true ie same
+            } else {
+                //printf(1,"Ocrn = %d, i = %d \n",occurence,i-1);
+                break;
+            }
+        }
+    }
+}
 
 int
 main(int argc, char *argv[]) {
@@ -93,7 +102,7 @@ main(int argc, char *argv[]) {
 
     for(i = 1; i < argc; i++){
         if((fd = open(argv[i], 0)) < 0){
-            printf(1, "cat: cannot open %s\n", argv[i]);
+            printf(1, "uniq: cannot open %s\n", argv[i]);
             exit();
         }
         uniq(fd);
