@@ -19,3 +19,4 @@ mkfs
 .idea/*
 CMakeLists.txt
 cmake-build-debug/*
+partner.txt
